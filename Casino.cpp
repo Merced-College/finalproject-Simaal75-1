@@ -80,6 +80,4 @@ void Casino::run() {
     }
 
     scores.printSummary(player.getName(), player.getBalance());
-    scores.saveToCSV("session_stats.csv", player.getName(), player.getBalance());
-    std::cout << "Session saved to session_stats.csv\n";
 }
