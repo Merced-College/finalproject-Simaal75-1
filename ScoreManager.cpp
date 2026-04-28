@@ -72,21 +72,3 @@ void ScoreManager::printSummary(const std::string& playerName, int balance) cons
     std::cout << "Ending balance: $" << balance << "\n";
     std::cout << "==============================\n";
 }
-
-void ScoreManager::saveToCSV(const std::string& filename, const std::string& playerName, int balance) const {
-    std::ofstream file(filename);
-
-    if (!file.is_open()) {
-        return;
-    }
-
-    file << "player,wins,losses,ties,blackjackRounds,highCardRounds,totalRounds,endingBalance\n";
-    file << playerName << ","
-         << getWins() << ","
-         << getLosses() << ","
-         << getTies() << ","
-         << getBlackjackRounds() << ","
-         << getHighCardRounds() << ","
-         << getTotalRounds() << ","
-         << balance << "\n";
-}

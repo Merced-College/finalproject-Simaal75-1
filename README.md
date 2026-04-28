@@ -1,4 +1,3 @@
-````markdown
 # Casino Nights
 
 ## Description
@@ -252,6 +251,3 @@ Big-O:
 Simaal B
 
 This was an individual project.
-
-```
-```
