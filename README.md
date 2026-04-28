@@ -149,32 +149,7 @@ Big-O:
 
 * O(n), because it checks each card in the hand.
 
-### Algorithm #3: Bet Validation
-
-Where it is used:
-
-* `BlackjackGame.cpp`
-* Function: `getValidBet()`
-* `HighCardGame.cpp`
-* Function: `getValidBet()`
-
-What it does:
-
-* Makes sure the player enters a valid bet.
-* The bet must be a number, greater than 0, and not more than the player’s current balance.
-
-Basic steps:
-
-1. Ask the player for a bet.
-2. Check if input is valid.
-3. Check if the bet is in range.
-4. Repeat until the player enters a valid bet.
-
-Big-O:
-
-* O(1) per check.
-
-### Algorithm #4: Blackjack Winner Logic
+### Algorithm #3: Blackjack Winner Logic
 
 Where it is used:
 
@@ -196,55 +171,6 @@ Basic steps:
 Big-O:
 
 * O(1), because it only uses direct comparisons.
-
-### Algorithm #5: High Card Rule Logic
-
-Where it is used:
-
-* `HighCardGame.cpp`
-* Inside the `play()` function
-
-What it does:
-
-* Runs the High Card game.
-* The player sees their card and chooses to call or fold.
-* If the player calls, their card is compared to the dealer’s hidden card.
-* If the player folds, they lose half their bet.
-
-Basic steps:
-
-1. Deal one card to the player.
-2. Deal one hidden card to the dealer.
-3. Ask the player to call or fold.
-4. If fold, subtract half the bet.
-5. If call, compare card values.
-6. Update balance and stats.
-
-Big-O:
-
-* O(1), because it only compares two cards.
-
-### Algorithm #6: Menu Choice Logic
-
-Where it is used:
-
-* `Casino.cpp`
-* Function: `getChoice()`
-
-What it does:
-
-* Reads the user’s menu choice and prevents bad input from crashing the program.
-
-Basic steps:
-
-1. Ask the user for a menu choice.
-2. Check if input is valid.
-3. Clear bad input if needed.
-4. Return the selected choice.
-
-Big-O:
-
-* O(1), because it checks one menu input at a time.
 
 ## Contributors
 

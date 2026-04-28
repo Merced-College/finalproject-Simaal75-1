@@ -9,19 +9,20 @@
 #include <random>
 
 bool Deck::loadFromCSV(const std::string& filename) {
-    cards.clear(); // reset deck before loading
+    cards.clear(); // clear old deck before loading new one
 
     std::ifstream file(filename);
     if (!file.is_open()) {
-        return false; // file didn't open
+        return false; // file didn't load
     }
 
     std::string line;
 
+    // read each line from csv file
     while (getline(file, line)) {
         if (line.empty()) continue;
 
-        // split csv line into parts
+        // split line into suit, rank, value
         std::stringstream ss(line);
         std::string suit, rank, valueStr;
 
@@ -31,7 +32,7 @@ bool Deck::loadFromCSV(const std::string& filename) {
 
         int value = std::stoi(valueStr);
 
-        // add card to deck
+        // create card object and store it
         cards.push_back(Card(suit, rank, value));
     }
 
@@ -39,15 +40,17 @@ bool Deck::loadFromCSV(const std::string& filename) {
 }
 
 /*
-Algorithm #1 - Shuffle Deck
-Randomizes the order of the cards before gameplay.
+Algorithm 1: Shuffle Deck
+
+Randomizes order of cards so game is not predictable.
+
 Time Complexity: O(n)
 */
 void Deck::shuffleDeck() {
     std::random_device rd;
     std::mt19937 g(rd());
 
-    // built-in shuffle on vector
+    // shuffle entire vector of cards
     std::shuffle(cards.begin(), cards.end(), g);
 }
 
@@ -57,7 +60,7 @@ Card Deck::dealCard() {
     // take last card (top of deck)
     Card top = cards.back();
 
-    // remove it so it can't be reused
+    // remove it so it cannot be reused
     cards.pop_back();
 
     return top;

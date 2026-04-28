@@ -14,11 +14,13 @@ void Casino::showMenu() const {
     std::cout << "4. Exit\n";
 }
 
+// get user choice safely
 int Casino::getChoice() const {
     int choice;
     std::cin >> choice;
 
     if (std::cin.fail()) {
+        // prevent crash on bad input
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return -1;
@@ -36,11 +38,12 @@ void Casino::setupPlayer() {
     if (name.empty()) name = "Player";
 
     player.setName(name);
-    player.setBalance(100);
+    player.setBalance(100); // starting money
 }
 
 void Casino::run() {
 
+    // load deck from csv file
     if (!deck.loadFromCSV("cards.csv")) {
         std::cout << "Error loading cards.csv\n";
         return;
@@ -52,22 +55,27 @@ void Casino::run() {
 
     bool running = true;
 
-    // main loop
+    // main game loop
     while (running) {
+
         showMenu();
 
         int choice = getChoice();
 
         if (choice == 1) {
+            // run blackjack
             blackjackGame.play(player, deck, scores);
         } 
         else if (choice == 2) {
+            // run high card
             highCardGame.play(player, deck, scores);
         } 
         else if (choice == 3) {
+            // show stats
             scores.printSummary(player.getName(), player.getBalance());
         } 
         else if (choice == 4) {
+            // exit loop
             running = false;
         } 
         else {
@@ -75,5 +83,6 @@ void Casino::run() {
         }
     }
 
+    // final scoreboard
     scores.printSummary(player.getName(), player.getBalance());
 }

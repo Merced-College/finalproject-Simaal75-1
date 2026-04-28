@@ -7,23 +7,28 @@
 #include <limits>
 
 /*
-Algorithm #2 - Hand Value (Blackjack)
-Calculates total value and handles aces (11 → 1 if needed)
+Algorithm 2: Blackjack Hand Value
+
+Adds all card values and adjusts aces if needed.
+
 Time Complexity: O(n)
 */
+
 int BlackjackGame::getHandValue(const std::vector<Card>& hand) const {
     int total = 0;
     int aces = 0;
 
+    // go through each card in hand
     for (const Card& card : hand) {
         total += card.getValue();
 
+        // track aces separately
         if (card.getValue() == 11) {
-            aces++; // count aces separately
+            aces++;
         }
     }
 
-    // convert aces if total too high
+    // if total too high, convert ace from 11 to 1
     while (total > 21 && aces > 0) {
         total -= 10;
         aces--;
@@ -32,6 +37,7 @@ int BlackjackGame::getHandValue(const std::vector<Card>& hand) const {
     return total;
 }
 
+// shows cards, hides dealer card when needed
 void BlackjackGame::showHand(const std::vector<Card>& hand, bool hideFirstCard) const {
     for (int i = 0; i < (int)hand.size(); i++) {
         if (hideFirstCard && i == 0) {
@@ -42,6 +48,7 @@ void BlackjackGame::showHand(const std::vector<Card>& hand, bool hideFirstCard) 
     }
 }
 
+// ensures user enters a valid bet
 int BlackjackGame::getValidBet(int balance) const {
     int bet;
 
@@ -50,6 +57,7 @@ int BlackjackGame::getValidBet(int balance) const {
         std::cin >> bet;
 
         if (std::cin.fail()) {
+            // clear bad input
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid input.\n";
@@ -66,22 +74,23 @@ int BlackjackGame::getValidBet(int balance) const {
 
 void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
-    // reload deck if too small
+    // if deck is low, reload and shuffle
     if (deck.size() < 15) {
         deck.loadFromCSV("cards.csv");
         deck.shuffleDeck();
     }
 
+    // track that a blackjack round happened
     scores.addBlackjackRound();
 
-    player.clearHand();
+    player.clearHand(); // reset player hand
     Player dealer("Dealer", 0);
 
     std::cout << "\n===== BLACKJACK =====\n";
 
     int bet = getValidBet(player.getBalance());
 
-    // deal starting cards
+    // deal 2 cards each
     player.addCard(deck.dealCard());
     dealer.addCard(deck.dealCard());
     player.addCard(deck.dealCard());
@@ -91,6 +100,7 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
     // player decision loop
     while (playerTurn) {
+
         std::cout << "\nYour hand:\n";
         showHand(player.getHand(), false);
 
@@ -100,6 +110,7 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
         std::cout << "\nDealer shows:\n";
         showHand(dealer.getHand(), true);
 
+        // stop if 21 or bust
         if (total >= 21) break;
 
         std::string choice;
@@ -107,13 +118,15 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
         std::getline(std::cin, choice);
 
         if (choice == "hit" || choice == "h") {
+            // add another card
             player.addCard(deck.dealCard());
         } else {
+            // end player turn
             playerTurn = false;
         }
     }
 
-    // dealer logic
+    // dealer must hit until 17
     while (getHandValue(dealer.getHand()) < 17) {
         dealer.addCard(deck.dealCard());
     }
@@ -122,8 +135,11 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
     int d = getHandValue(dealer.getHand());
 
     /*
-    Algorithm #3 - Winner Logic
-    Compares totals
+    Algorithm 3: Winner Decision Logic
+
+    Compares player and dealer totals.
+
+    Time Complexity: O(1)
     */
     if (p > 21) {
         std::cout << "You busted.\n";
@@ -144,4 +160,6 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
         std::cout << "Tie.\n";
         scores.addTie();
     }
+
+    // update scoreboard happens here
 }

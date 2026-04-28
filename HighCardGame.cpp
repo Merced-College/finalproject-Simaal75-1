@@ -6,6 +6,7 @@
 #include <iostream>
 #include <limits>
 
+// checks bet input
 int HighCardGame::getValidBet(int balance) const {
     int bet;
 
@@ -29,6 +30,7 @@ int HighCardGame::getValidBet(int balance) const {
 
 void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
+    // reload deck if needed
     if (deck.size() < 5) {
         deck.loadFromCSV("cards.csv");
         deck.shuffleDeck();
@@ -40,6 +42,7 @@ void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
     int bet = getValidBet(player.getBalance());
 
+    // deal one card each
     Card playerCard = deck.dealCard();
     Card dealerCard = deck.dealCard();
 
@@ -50,6 +53,7 @@ void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
     std::cout << "Call or fold? ";
     std::getline(std::cin, choice);
 
+    // folding = safe option (lose half)
     if (choice == "fold" || choice == "f") {
         int loss = bet / 2;
         player.subtractBalance(loss);
@@ -59,8 +63,10 @@ void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
         return;
     }
 
+    // reveal dealer card
     std::cout << "Dealer card: " << dealerCard.toString() << "\n";
 
+    // compare values
     if (playerCard.getValue() > dealerCard.getValue()) {
         std::cout << "You win.\n";
         player.addBalance(bet);
@@ -75,4 +81,6 @@ void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
         std::cout << "Tie.\n";
         scores.addTie();
     }
+
+    // update stats after round
 }
