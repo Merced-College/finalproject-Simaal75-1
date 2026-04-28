@@ -1,23 +1,16 @@
 //Simaal B
 //CPSC 25 - Final Project
-//Fall 2025
+//Spring 2026
 
 #include "BlackjackGame.h"
 #include <iostream>
 #include <limits>
 
 /*
-Algorithm Requirement:
-ALGORITHM #2 - Blackjack Hand Value
-
-Description:
-Calculates the total value of a Blackjack hand.
-Aces start as 11, but change to 1 if the player would bust.
-
-Time Complexity:
-O(n), because it checks each card in the hand.
+Algorithm #2 - Hand Value (Blackjack)
+Calculates total value and handles aces (11 → 1 if needed)
+Time Complexity: O(n)
 */
-
 int BlackjackGame::getHandValue(const std::vector<Card>& hand) const {
     int total = 0;
     int aces = 0;
@@ -26,10 +19,11 @@ int BlackjackGame::getHandValue(const std::vector<Card>& hand) const {
         total += card.getValue();
 
         if (card.getValue() == 11) {
-            aces++;
+            aces++; // count aces separately
         }
     }
 
+    // convert aces if total too high
     while (total > 21 && aces > 0) {
         total -= 10;
         aces--;
@@ -48,18 +42,6 @@ void BlackjackGame::showHand(const std::vector<Card>& hand, bool hideFirstCard) 
     }
 }
 
-/*
-Algorithm Requirement:
-ALGORITHM #3 - Bet Validation
-
-Description:
-Makes sure the player enters a valid bet.
-The bet must be a number, greater than 0, and not more than the player's balance.
-
-Time Complexity:
-O(1) for each check, but it repeats until valid input is entered.
-*/
-
 int BlackjackGame::getValidBet(int balance) const {
     int bet;
 
@@ -70,10 +52,12 @@ int BlackjackGame::getValidBet(int balance) const {
         if (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid input. Try again.\n";
-        } else if (bet <= 0 || bet > balance) {
-            std::cout << "Bet must be between 1 and " << balance << ".\n";
-        } else {
+            std::cout << "Invalid input.\n";
+        } 
+        else if (bet <= 0 || bet > balance) {
+            std::cout << "Invalid bet amount.\n";
+        } 
+        else {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return bet;
         }
@@ -81,6 +65,8 @@ int BlackjackGame::getValidBet(int balance) const {
 }
 
 void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
+
+    // reload deck if too small
     if (deck.size() < 15) {
         deck.loadFromCSV("cards.csv");
         deck.shuffleDeck();
@@ -92,10 +78,10 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
     Player dealer("Dealer", 0);
 
     std::cout << "\n===== BLACKJACK =====\n";
-    std::cout << "Balance: $" << player.getBalance() << "\n";
 
     int bet = getValidBet(player.getBalance());
 
+    // deal starting cards
     player.addCard(deck.dealCard());
     dealer.addCard(deck.dealCard());
     player.addCard(deck.dealCard());
@@ -103,81 +89,59 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
     bool playerTurn = true;
 
+    // player decision loop
     while (playerTurn) {
         std::cout << "\nYour hand:\n";
         showHand(player.getHand(), false);
-        std::cout << "Your total: " << getHandValue(player.getHand()) << "\n";
-
-        std::cout << "\nDealer hand:\n";
-        showHand(dealer.getHand(), true);
 
         int total = getHandValue(player.getHand());
+        std::cout << "Total: " << total << "\n";
 
-        if (total == 21) {
-            std::cout << "You have 21.\n";
-            break;
-        }
+        std::cout << "\nDealer shows:\n";
+        showHand(dealer.getHand(), true);
 
-        if (total > 21) {
-            std::cout << "You busted.\n";
-            player.subtractBalance(bet);
-            scores.addLoss();
-            return;
-        }
+        if (total >= 21) break;
 
         std::string choice;
         std::cout << "\nHit or stand? ";
         std::getline(std::cin, choice);
 
-        if (choice == "hit" || choice == "Hit" || choice == "h" || choice == "H") {
+        if (choice == "hit" || choice == "h") {
             player.addCard(deck.dealCard());
         } else {
             playerTurn = false;
         }
     }
 
+    // dealer logic
     while (getHandValue(dealer.getHand()) < 17) {
         dealer.addCard(deck.dealCard());
     }
 
-    int playerTotal = getHandValue(player.getHand());
-    int dealerTotal = getHandValue(dealer.getHand());
-
-    std::cout << "\nFinal hands:\n";
-
-    std::cout << "\nYour hand:\n";
-    showHand(player.getHand(), false);
-    std::cout << "Your total: " << playerTotal << "\n";
-
-    std::cout << "\nDealer hand:\n";
-    showHand(dealer.getHand(), false);
-    std::cout << "Dealer total: " << dealerTotal << "\n";
+    int p = getHandValue(player.getHand());
+    int d = getHandValue(dealer.getHand());
 
     /*
-    Algorithm Requirement:
-    ALGORITHM #4 - Blackjack Winner Logic
-
-    Description:
-    Compares player and dealer totals to decide who wins.
-    It also updates balance and score stats.
-
-    Time Complexity:
-    O(1), because it only uses direct comparisons.
+    Algorithm #3 - Winner Logic
+    Compares totals
     */
-    if (dealerTotal > 21) {
-        std::cout << "\nDealer busted. You win.\n";
-        player.addBalance(bet);
-        scores.addWin();
-    } else if (playerTotal > dealerTotal) {
-        std::cout << "\nYou win.\n";
-        player.addBalance(bet);
-        scores.addWin();
-    } else if (dealerTotal > playerTotal) {
-        std::cout << "\nDealer wins.\n";
+    if (p > 21) {
+        std::cout << "You busted.\n";
         player.subtractBalance(bet);
         scores.addLoss();
-    } else {
-        std::cout << "\nTie.\n";
+    } 
+    else if (d > 21 || p > d) {
+        std::cout << "You win.\n";
+        player.addBalance(bet);
+        scores.addWin();
+    } 
+    else if (d > p) {
+        std::cout << "Dealer wins.\n";
+        player.subtractBalance(bet);
+        scores.addLoss();
+    } 
+    else {
+        std::cout << "Tie.\n";
         scores.addTie();
     }
 }

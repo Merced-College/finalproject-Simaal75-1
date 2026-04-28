@@ -7,29 +7,12 @@
 #include <limits>
 
 void Casino::showMenu() const {
-    std::cout << "\n==============================\n";
-    std::cout << "CASINO NIGHTS\n";
-    std::cout << "==============================\n";
-    std::cout << "Player: " << player.getName() << "\n";
-    std::cout << "Balance: $" << player.getBalance() << "\n";
-    std::cout << "1. Play Blackjack\n";
-    std::cout << "2. Play High Card\n";
-    std::cout << "3. Show Scoreboard\n";
+    std::cout << "\n===== CASINO =====\n";
+    std::cout << "1. Blackjack\n";
+    std::cout << "2. High Card\n";
+    std::cout << "3. Scoreboard\n";
     std::cout << "4. Exit\n";
-    std::cout << "Choose: ";
 }
-
-/*
-Algorithm Requirement:
-ALGORITHM #6 - Menu Choice Logic
-
-Description:
-Reads the user's menu choice and checks if the input is valid.
-This keeps the casino menu from crashing on bad input.
-
-Time Complexity:
-O(1), because it only checks one menu input.
-*/
 
 int Casino::getChoice() const {
     int choice;
@@ -47,47 +30,47 @@ int Casino::getChoice() const {
 
 void Casino::setupPlayer() {
     std::string name;
-
     std::cout << "Enter your name: ";
     std::getline(std::cin, name);
 
-    if (name.empty()) {
-        name = "Player";
-    }
+    if (name.empty()) name = "Player";
 
     player.setName(name);
     player.setBalance(100);
 }
 
 void Casino::run() {
+
     if (!deck.loadFromCSV("cards.csv")) {
-        std::cout << "Could not load cards.csv\n";
+        std::cout << "Error loading cards.csv\n";
         return;
     }
 
     deck.shuffleDeck();
+
     setupPlayer();
 
     bool running = true;
 
+    // main loop
     while (running) {
-        if (player.getBalance() <= 0) {
-            std::cout << "\nYou are out of money.\n";
-            break;
-        }
-
         showMenu();
+
         int choice = getChoice();
 
         if (choice == 1) {
             blackjackGame.play(player, deck, scores);
-        } else if (choice == 2) {
+        } 
+        else if (choice == 2) {
             highCardGame.play(player, deck, scores);
-        } else if (choice == 3) {
+        } 
+        else if (choice == 3) {
             scores.printSummary(player.getName(), player.getBalance());
-        } else if (choice == 4) {
+        } 
+        else if (choice == 4) {
             running = false;
-        } else {
+        } 
+        else {
             std::cout << "Invalid choice.\n";
         }
     }

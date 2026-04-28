@@ -1,6 +1,6 @@
 //Simaal B
 //CPSC 25 - Final Project
-//Fall 2025
+//Spring 2026
 
 #include "HighCardGame.h"
 #include <iostream>
@@ -16,10 +16,11 @@ int HighCardGame::getValidBet(int balance) const {
         if (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid input. Try again.\n";
-        } else if (bet <= 0 || bet > balance) {
-            std::cout << "Bet must be between 1 and " << balance << ".\n";
-        } else {
+        } 
+        else if (bet <= 0 || bet > balance) {
+            std::cout << "Invalid bet.\n";
+        } 
+        else {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return bet;
         }
@@ -27,6 +28,7 @@ int HighCardGame::getValidBet(int balance) const {
 }
 
 void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
+
     if (deck.size() < 5) {
         deck.loadFromCSV("cards.csv");
         deck.shuffleDeck();
@@ -35,64 +37,42 @@ void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
     scores.addHighCardRound();
 
     std::cout << "\n===== HIGH CARD =====\n";
-    std::cout << "Balance: $" << player.getBalance() << "\n";
 
     int bet = getValidBet(player.getBalance());
 
     Card playerCard = deck.dealCard();
     Card dealerCard = deck.dealCard();
 
-    std::cout << "\nYour card: " << playerCard.toString() << "\n";
+    std::cout << "Your card: " << playerCard.toString() << "\n";
     std::cout << "Dealer has a hidden card.\n";
 
     std::string choice;
-    std::cout << "\nCall or fold? ";
+    std::cout << "Call or fold? ";
     std::getline(std::cin, choice);
 
-    /*
-    Algorithm Requirement:
-    ALGORITHM #5 - High Card Rule Logic
-
-    Description:
-    The player can call or fold.
-    If they call, cards are compared.
-    If they fold, they lose half the bet.
-
-    Time Complexity:
-    O(1), because it uses direct comparisons.
-    */
-   
-    if (choice == "fold" || choice == "Fold" || choice == "f" || choice == "F") {
-        int lost = bet / 2;
-
-        if (lost < 1) {
-            lost = 1;
-        }
-
-        player.subtractBalance(lost);
+    if (choice == "fold" || choice == "f") {
+        int loss = bet / 2;
+        player.subtractBalance(loss);
         scores.addLoss();
 
-        std::cout << "\nYou folded.\n";
-        std::cout << "You lost half your bet: $" << lost << "\n";
-        std::cout << "Dealer card was: " << dealerCard.toString() << "\n";
-        std::cout << "New balance: $" << player.getBalance() << "\n";
+        std::cout << "You folded. Lost $" << loss << "\n";
         return;
     }
 
-    std::cout << "\nDealer reveals: " << dealerCard.toString() << "\n";
+    std::cout << "Dealer card: " << dealerCard.toString() << "\n";
 
     if (playerCard.getValue() > dealerCard.getValue()) {
-        std::cout << "You win High Card.\n";
+        std::cout << "You win.\n";
         player.addBalance(bet);
         scores.addWin();
-    } else if (dealerCard.getValue() > playerCard.getValue()) {
-        std::cout << "Dealer wins High Card.\n";
+    } 
+    else if (dealerCard.getValue() > playerCard.getValue()) {
+        std::cout << "Dealer wins.\n";
         player.subtractBalance(bet);
         scores.addLoss();
-    } else {
-        std::cout << "Tie. No money lost.\n";
+    } 
+    else {
+        std::cout << "Tie.\n";
         scores.addTie();
     }
-
-    std::cout << "New balance: $" << player.getBalance() << "\n";
 }

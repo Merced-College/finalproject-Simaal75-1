@@ -6,7 +6,7 @@
 
 Player::Player() {
     name = "";
-    balance = 100;
+    balance = 100; // default starting money
 }
 
 Player::Player(std::string name, int balance) {
@@ -31,18 +31,22 @@ int Player::getBalance() const {
 }
 
 void Player::addBalance(int amount) {
+    // used when player wins
     balance += amount;
 }
 
 void Player::subtractBalance(int amount) {
+    // used when player loses
     balance -= amount;
 }
 
 void Player::clearHand() {
+    // reset hand for new round
     hand.clear();
 }
 
 void Player::addCard(const Card& card) {
+    // add card to player's hand
     hand.push_back(card);
 }
 

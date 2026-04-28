@@ -1,6 +1,6 @@
 //Simaal B
 //CPSC 25 - Final Project
-//Fall 2025
+//Spring 2026
 
 #include "Deck.h"
 #include <fstream>
@@ -9,30 +9,29 @@
 #include <random>
 
 bool Deck::loadFromCSV(const std::string& filename) {
-    cards.clear();
+    cards.clear(); // reset deck before loading
 
     std::ifstream file(filename);
     if (!file.is_open()) {
-        return false;
+        return false; // file didn't open
     }
 
     std::string line;
 
     while (getline(file, line)) {
-        if (line.empty()) {
-            continue;
-        }
+        if (line.empty()) continue;
 
+        // split csv line into parts
         std::stringstream ss(line);
-        std::string suit;
-        std::string rank;
-        std::string valueStr;
+        std::string suit, rank, valueStr;
 
         getline(ss, suit, ',');
         getline(ss, rank, ',');
         getline(ss, valueStr, ',');
 
         int value = std::stoi(valueStr);
+
+        // add card to deck
         cards.push_back(Card(suit, rank, value));
     }
 
@@ -40,30 +39,27 @@ bool Deck::loadFromCSV(const std::string& filename) {
 }
 
 /*
-Algorithm Requirement:
-ALGORITHM #1 - Shuffle Deck
-
-Description:
-Randomizes the order of the cards before games are played.
-This is used so Blackjack and High Card do not deal cards in the same order every time.
-
-Time Complexity:
-O(n), because every card may be moved during the shuffle.
+Algorithm #1 - Shuffle Deck
+Randomizes the order of the cards before gameplay.
+Time Complexity: O(n)
 */
-
 void Deck::shuffleDeck() {
     std::random_device rd;
     std::mt19937 g(rd());
+
+    // built-in shuffle on vector
     std::shuffle(cards.begin(), cards.end(), g);
 }
 
 Card Deck::dealCard() {
-    if (cards.empty()) {
-        return Card();
-    }
+    if (cards.empty()) return Card();
 
+    // take last card (top of deck)
     Card top = cards.back();
+
+    // remove it so it can't be reused
     cards.pop_back();
+
     return top;
 }
 
