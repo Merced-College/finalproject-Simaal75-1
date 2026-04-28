@@ -1,6 +1,6 @@
 //Simaal B
 //CPSC 25 - Final Project
-//Spring 2026
+//Fall 2025
 
 #include "HighCardGame.h"
 #include <iostream>
@@ -17,11 +17,9 @@ int HighCardGame::getValidBet(int balance) const {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid input. Try again.\n";
-        } 
-        else if (bet <= 0 || bet > balance) {
+        } else if (bet <= 0 || bet > balance) {
             std::cout << "Bet must be between 1 and " << balance << ".\n";
-        } 
-        else {
+        } else {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return bet;
         }
@@ -51,6 +49,19 @@ void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
     std::cout << "\nCall or fold? ";
     std::getline(std::cin, choice);
 
+    /*
+    Algorithm Requirement:
+    ALGORITHM #5 - High Card Rule Logic
+
+    Description:
+    The player can call or fold.
+    If they call, cards are compared.
+    If they fold, they lose half the bet.
+
+    Time Complexity:
+    O(1), because it uses direct comparisons.
+    */
+   
     if (choice == "fold" || choice == "Fold" || choice == "f" || choice == "F") {
         int lost = bet / 2;
 
@@ -74,13 +85,11 @@ void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
         std::cout << "You win High Card.\n";
         player.addBalance(bet);
         scores.addWin();
-    } 
-    else if (dealerCard.getValue() > playerCard.getValue()) {
+    } else if (dealerCard.getValue() > playerCard.getValue()) {
         std::cout << "Dealer wins High Card.\n";
         player.subtractBalance(bet);
         scores.addLoss();
-    } 
-    else {
+    } else {
         std::cout << "Tie. No money lost.\n";
         scores.addTie();
     }

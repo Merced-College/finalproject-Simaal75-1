@@ -1,10 +1,22 @@
 //Simaal B
 //CPSC 25 - Final Project
-//Spring 2026
+//Fall 2025
 
 #include "BlackjackGame.h"
 #include <iostream>
 #include <limits>
+
+/*
+Algorithm Requirement:
+ALGORITHM #2 - Blackjack Hand Value
+
+Description:
+Calculates the total value of a Blackjack hand.
+Aces start as 11, but change to 1 if the player would bust.
+
+Time Complexity:
+O(n), because it checks each card in the hand.
+*/
 
 int BlackjackGame::getHandValue(const std::vector<Card>& hand) const {
     int total = 0;
@@ -12,6 +24,7 @@ int BlackjackGame::getHandValue(const std::vector<Card>& hand) const {
 
     for (const Card& card : hand) {
         total += card.getValue();
+
         if (card.getValue() == 11) {
             aces++;
         }
@@ -34,6 +47,18 @@ void BlackjackGame::showHand(const std::vector<Card>& hand, bool hideFirstCard) 
         }
     }
 }
+
+/*
+Algorithm Requirement:
+ALGORITHM #3 - Bet Validation
+
+Description:
+Makes sure the player enters a valid bet.
+The bet must be a number, greater than 0, and not more than the player's balance.
+
+Time Complexity:
+O(1) for each check, but it repeats until valid input is entered.
+*/
 
 int BlackjackGame::getValidBet(int balance) const {
     int bet;
@@ -65,7 +90,6 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
     player.clearHand();
     Player dealer("Dealer", 0);
-    dealer.clearHand();
 
     std::cout << "\n===== BLACKJACK =====\n";
     std::cout << "Balance: $" << player.getBalance() << "\n";
@@ -120,6 +144,7 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
     int dealerTotal = getHandValue(dealer.getHand());
 
     std::cout << "\nFinal hands:\n";
+
     std::cout << "\nYour hand:\n";
     showHand(player.getHand(), false);
     std::cout << "Your total: " << playerTotal << "\n";
@@ -128,6 +153,17 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
     showHand(dealer.getHand(), false);
     std::cout << "Dealer total: " << dealerTotal << "\n";
 
+    /*
+    Algorithm Requirement:
+    ALGORITHM #4 - Blackjack Winner Logic
+
+    Description:
+    Compares player and dealer totals to decide who wins.
+    It also updates balance and score stats.
+
+    Time Complexity:
+    O(1), because it only uses direct comparisons.
+    */
     if (dealerTotal > 21) {
         std::cout << "\nDealer busted. You win.\n";
         player.addBalance(bet);

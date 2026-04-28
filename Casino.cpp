@@ -19,6 +19,18 @@ void Casino::showMenu() const {
     std::cout << "Choose: ";
 }
 
+/*
+Algorithm Requirement:
+ALGORITHM #6 - Menu Choice Logic
+
+Description:
+Reads the user's menu choice and checks if the input is valid.
+This keeps the casino menu from crashing on bad input.
+
+Time Complexity:
+O(1), because it only checks one menu input.
+*/
+
 int Casino::getChoice() const {
     int choice;
     std::cin >> choice;
@@ -35,6 +47,7 @@ int Casino::getChoice() const {
 
 void Casino::setupPlayer() {
     std::string name;
+
     std::cout << "Enter your name: ";
     std::getline(std::cin, name);
 

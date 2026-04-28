@@ -1,13 +1,12 @@
 //Simaal B
 //CPSC 25 - Final Project
-//Spring 2026
+//Fall 2025
 
 #include "Deck.h"
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <random>
-#include <iostream>
 
 bool Deck::loadFromCSV(const std::string& filename) {
     cards.clear();
@@ -25,7 +24,9 @@ bool Deck::loadFromCSV(const std::string& filename) {
         }
 
         std::stringstream ss(line);
-        std::string suit, rank, valueStr;
+        std::string suit;
+        std::string rank;
+        std::string valueStr;
 
         getline(ss, suit, ',');
         getline(ss, rank, ',');
@@ -37,6 +38,18 @@ bool Deck::loadFromCSV(const std::string& filename) {
 
     return true;
 }
+
+/*
+Algorithm Requirement:
+ALGORITHM #1 - Shuffle Deck
+
+Description:
+Randomizes the order of the cards before games are played.
+This is used so Blackjack and High Card do not deal cards in the same order every time.
+
+Time Complexity:
+O(n), because every card may be moved during the shuffle.
+*/
 
 void Deck::shuffleDeck() {
     std::random_device rd;
@@ -56,12 +69,4 @@ Card Deck::dealCard() {
 
 int Deck::size() const {
     return (int)cards.size();
-}
-
-bool Deck::empty() const {
-    return cards.empty();
-}
-
-void Deck::clear() {
-    cards.clear();
 }

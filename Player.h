@@ -1,6 +1,6 @@
 //Simaal B
 //CPSC 25 - Final Project
-//Spring 2026
+//Fall 2025
 
 #ifndef PLAYER_H
 #define PLAYER_H
@@ -9,6 +9,17 @@
 #include <vector>
 #include <string>
 
+/*
+Class: Player
+
+Description:
+Stores the player's name, balance, and current hand.
+This class keeps player information separate from the game logic.
+
+Data Structure Requirement:
+DATA STRUCTURE #2 - vector
+The player's hand is stored in a vector because cards can be added during the round.
+*/
 class Player {
 private:
     std::string name;

@@ -1,6 +1,6 @@
 //Simaal B
 //CPSC 25 - Final Project
-//Spring 2026
+//Fall 2025
 
 #ifndef CASINO_H
 #define CASINO_H
@@ -10,6 +10,14 @@
 #include "ScoreManager.h"
 #include "BlackjackGame.h"
 #include "HighCardGame.h"
+
+/*
+Class: Casino
+
+Description:
+Controls the main casino menu and connects all parts of the program.
+This class keeps main.cpp small and makes the project more organized.
+*/
 
 class Casino {
 private:
