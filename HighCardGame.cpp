@@ -17,9 +17,10 @@ int HighCardGame::getValidBet(int balance) const {
         if (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid input.\n";
         } 
         else if (bet <= 0 || bet > balance) {
-            std::cout << "Invalid bet.\n";
+            std::cout << "Invalid bet amount. You only have $" << balance << ".\n";
         } 
         else {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -30,7 +31,7 @@ int HighCardGame::getValidBet(int balance) const {
 
 void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
-    // reload deck if needed
+    // reload deck if it gets low
     if (deck.size() < 5) {
         deck.loadFromCSV("cards.csv");
         deck.shuffleDeck();
@@ -39,48 +40,62 @@ void HighCardGame::play(Player& player, Deck& deck, ScoreManager& scores) {
     scores.addHighCardRound();
 
     std::cout << "\n===== HIGH CARD =====\n";
+    std::cout << "Available balance: $" << player.getBalance() << "\n";
 
     int bet = getValidBet(player.getBalance());
 
-    // deal one card each
+    // deal one card to player and one hidden card to dealer
     Card playerCard = deck.dealCard();
     Card dealerCard = deck.dealCard();
 
-    std::cout << "Your card: " << playerCard.toString() << "\n";
+    std::cout << "\nYour card: " << playerCard.toString() << "\n";
     std::cout << "Dealer has a hidden card.\n";
 
     std::string choice;
-    std::cout << "Call or fold? ";
+    std::cout << "\nCall or fold? ";
     std::getline(std::cin, choice);
 
-    // folding = safe option (lose half)
+    // fold = safer option, lose half the bet
     if (choice == "fold" || choice == "f") {
         int loss = bet / 2;
+
+        if (loss < 1) {
+            loss = 1;
+        }
+
         player.subtractBalance(loss);
         scores.addLoss();
 
-        std::cout << "You folded. Lost $" << loss << "\n";
+        std::cout << "\nFinal cards:\n";
+        std::cout << "Your card: " << playerCard.toString() << "\n";
+        std::cout << "Dealer card: " << dealerCard.toString() << "\n";
+
+        std::cout << "\nResult: You folded. You lost $" << loss << ".\n";
+        std::cout << "New balance: $" << player.getBalance() << "\n";
         return;
     }
 
-    // reveal dealer card
+    // call = compare cards and risk full bet
+    std::cout << "\nFinal cards:\n";
+    std::cout << "Your card: " << playerCard.toString() << "\n";
     std::cout << "Dealer card: " << dealerCard.toString() << "\n";
 
-    // compare values
+    std::cout << "\nResult: ";
+
     if (playerCard.getValue() > dealerCard.getValue()) {
-        std::cout << "You win.\n";
+        std::cout << "You win High Card.\n";
         player.addBalance(bet);
         scores.addWin();
     } 
     else if (dealerCard.getValue() > playerCard.getValue()) {
-        std::cout << "Dealer wins.\n";
+        std::cout << "Dealer wins High Card.\n";
         player.subtractBalance(bet);
         scores.addLoss();
     } 
     else {
-        std::cout << "Tie.\n";
+        std::cout << "Tie. No money lost.\n";
         scores.addTie();
     }
 
-    // update stats after round
+    std::cout << "New balance: $" << player.getBalance() << "\n";
 }

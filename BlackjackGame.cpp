@@ -13,22 +13,18 @@ Adds all card values and adjusts aces if needed.
 
 Time Complexity: O(n)
 */
-
 int BlackjackGame::getHandValue(const std::vector<Card>& hand) const {
     int total = 0;
     int aces = 0;
 
-    // go through each card in hand
     for (const Card& card : hand) {
         total += card.getValue();
 
-        // track aces separately
         if (card.getValue() == 11) {
             aces++;
         }
     }
 
-    // if total too high, convert ace from 11 to 1
     while (total > 21 && aces > 0) {
         total -= 10;
         aces--;
@@ -48,7 +44,7 @@ void BlackjackGame::showHand(const std::vector<Card>& hand, bool hideFirstCard) 
     }
 }
 
-// ensures user enters a valid bet
+// checks that user enters a valid bet
 int BlackjackGame::getValidBet(int balance) const {
     int bet;
 
@@ -57,13 +53,12 @@ int BlackjackGame::getValidBet(int balance) const {
         std::cin >> bet;
 
         if (std::cin.fail()) {
-            // clear bad input
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid input.\n";
         } 
         else if (bet <= 0 || bet > balance) {
-            std::cout << "Invalid bet amount.\n";
+            std::cout << "Invalid bet amount. You only have $" << balance << ".\n";
         } 
         else {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -74,19 +69,19 @@ int BlackjackGame::getValidBet(int balance) const {
 
 void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
-    // if deck is low, reload and shuffle
+    // reload deck if it gets low
     if (deck.size() < 15) {
         deck.loadFromCSV("cards.csv");
         deck.shuffleDeck();
     }
 
-    // track that a blackjack round happened
     scores.addBlackjackRound();
 
-    player.clearHand(); // reset player hand
+    player.clearHand();
     Player dealer("Dealer", 0);
 
     std::cout << "\n===== BLACKJACK =====\n";
+    std::cout << "Available balance: $" << player.getBalance() << "\n";
 
     int bet = getValidBet(player.getBalance());
 
@@ -98,19 +93,17 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
     bool playerTurn = true;
 
-    // player decision loop
     while (playerTurn) {
 
         std::cout << "\nYour hand:\n";
         showHand(player.getHand(), false);
 
         int total = getHandValue(player.getHand());
-        std::cout << "Total: " << total << "\n";
+        std::cout << "Your total: " << total << "\n";
 
         std::cout << "\nDealer shows:\n";
         showHand(dealer.getHand(), true);
 
-        // stop if 21 or bust
         if (total >= 21) break;
 
         std::string choice;
@@ -118,21 +111,29 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
         std::getline(std::cin, choice);
 
         if (choice == "hit" || choice == "h") {
-            // add another card
             player.addCard(deck.dealCard());
         } else {
-            // end player turn
             playerTurn = false;
         }
     }
 
-    // dealer must hit until 17
-    while (getHandValue(dealer.getHand()) < 17) {
+    // dealer only plays after player is done
+    while (getHandValue(player.getHand()) <= 21 && getHandValue(dealer.getHand()) < 17) {
         dealer.addCard(deck.dealCard());
     }
 
     int p = getHandValue(player.getHand());
     int d = getHandValue(dealer.getHand());
+
+    std::cout << "\nFinal hands:\n";
+
+    std::cout << "\nYour hand:\n";
+    showHand(player.getHand(), false);
+    std::cout << "Your total: " << p << "\n";
+
+    std::cout << "\nDealer hand:\n";
+    showHand(dealer.getHand(), false);
+    std::cout << "Dealer total: " << d << "\n";
 
     /*
     Algorithm 3: Winner Decision Logic
@@ -141,8 +142,11 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
 
     Time Complexity: O(1)
     */
+   
+    std::cout << "\nResult: ";
+
     if (p > 21) {
-        std::cout << "You busted.\n";
+        std::cout << "You busted. Dealer wins.\n";
         player.subtractBalance(bet);
         scores.addLoss();
     } 
@@ -161,5 +165,5 @@ void BlackjackGame::play(Player& player, Deck& deck, ScoreManager& scores) {
         scores.addTie();
     }
 
-    // update scoreboard happens here
+    std::cout << "New balance: $" << player.getBalance() << "\n";
 }
